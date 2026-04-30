@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 export default function HeroSection() {
   return (
@@ -30,7 +31,7 @@ export default function HeroSection() {
             pelanggan yang modern tanpa hambatan teknologi.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <button className="spotify-pill-primary">Mulai Sekarang</button>
+            <Link href="/register" className="spotify-pill-primary text-center">Mulai Sekarang</Link>
             <button className="spotify-pill-secondary">Lihat Demo</button>
           </div>
         </div>

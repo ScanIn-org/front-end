@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export default function FinalCTA() {
   return (
     <section className="py-24 relative overflow-hidden">
@@ -14,7 +16,7 @@ export default function FinalCTA() {
             mereka bersama Scan.in.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
-            <button className="spotify-pill-primary px-12 py-4 text-lg">Daftar Sekarang</button>
+            <Link href="/register" className="spotify-pill-primary px-12 py-4 text-lg inline-block">Daftar Sekarang</Link>
             <button className="spotify-pill-secondary px-12 py-4 text-lg">Hubungi Sales</button>
           </div>
         </div>

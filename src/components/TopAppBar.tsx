@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 export default function TopAppBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,12 +25,12 @@ export default function TopAppBar() {
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-3 flex-shrink-0">
-              <button className="text-zinc-400 font-medium hover:text-white transition-colors duration-200 text-sm">
+              <Link href="/login" className="text-zinc-400 font-medium hover:text-white transition-colors duration-200 text-sm">
                 Log In
-              </button>
-              <button className="bg-[#1ed760] text-black px-6 py-2 rounded-full font-bold text-xs uppercase tracking-widest active:scale-95 transition-transform hover:bg-[#1fdf64]">
+              </Link>
+              <Link href="/register" className="bg-[#1ed760] text-black px-6 py-2 rounded-full font-bold text-xs uppercase tracking-widest active:scale-95 transition-transform hover:bg-[#1fdf64]">
                 Get Started
-              </button>
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
@@ -88,12 +89,12 @@ export default function TopAppBar() {
               </a>
             ))}
             <div className="pt-2 space-y-2 border-t border-zinc-700">
-              <button className="w-full text-left px-4 py-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors text-sm font-medium">
+              <Link href="/login" className="block w-full text-left px-4 py-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors text-sm font-medium" onClick={() => setIsMenuOpen(false)}>
                 Log In
-              </button>
-              <button className="w-full bg-[#1ed760] text-black px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-widest active:scale-95 transition-transform hover:bg-[#1fdf64]">
+              </Link>
+              <Link href="/register" className="block w-full text-center bg-[#1ed760] text-black px-4 py-2 rounded-lg font-bold text-sm uppercase tracking-widest active:scale-95 transition-transform hover:bg-[#1fdf64]" onClick={() => setIsMenuOpen(false)}>
                 Get Started
-              </button>
+              </Link>
             </div>
           </nav>
         )}

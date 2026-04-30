@@ -1,6 +1,15 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 export default function LoginPage() {
+  const router = useRouter();
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push("/dashboard");
+  };
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#121212] px-4 py-8 text-[#e5e2e1] sm:px-6 sm:py-10 lg:px-8 lg:py-12">
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
@@ -30,7 +39,7 @@ export default function LoginPage() {
         </header>
 
         <section className="rounded-2xl border border-white/5 bg-[#181818] p-5 shadow-[0_0_80px_-20px_rgba(30,215,96,0.15)] backdrop-blur-sm sm:rounded-3xl sm:p-6 lg:p-7">
-          <form className="flex flex-col gap-5 sm:gap-6">
+          <form className="flex flex-col gap-5 sm:gap-6" onSubmit={handleLogin}>
             <div className="flex flex-col gap-2">
               <label
                 className="px-4 text-[11px] font-bold uppercase tracking-[0.18em] text-[#b3b3b3]"
