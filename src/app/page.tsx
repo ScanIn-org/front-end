@@ -1,16 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-
-type Particle = {
-  id: number;
-  size: string;
-  left: string;
-  delay: string;
-  duration: string;
-  drift: string;
-  opacity: string;
-};
+import { useEffect, useState } from "react";
 
 const rules = [
   { number: "01", text: "250 transaksi harian otomatis tersinkron" },
@@ -42,47 +32,9 @@ const storySteps = [
   },
 ] as const;
 
-const fract = (n: number) => n - Math.floor(n);
-
-const seeded = (i: number, salt: number) => {
-  const v = Math.sin(i * 78.233 + salt * 37.719) * 43758.5453123;
-  return fract(v);
-};
-
-const buildParticles = (count: number): Particle[] =>
-  Array.from({ length: count }, (_, i) => {
-    const sizeRand = seeded(i + 1, 11);
-    const leftRand = seeded(i + 3, 21);
-    const delayRand = seeded(i + 7, 31);
-    const durationRand = seeded(i + 11, 41);
-    const driftRand = seeded(i + 19, 51);
-    const opacityRand = seeded(i + 23, 61);
-
-    return {
-      id: i,
-      size: (sizeRand * 4 + 1).toFixed(4),
-      left: (leftRand * 100).toFixed(4),
-      delay: (delayRand * 20).toFixed(4),
-      duration: (durationRand * 18 + 12).toFixed(4),
-      drift: ((driftRand - 0.5) * 80).toFixed(4),
-      opacity: (opacityRand * 0.3 + 0.6).toFixed(6),
-    };
-  });
-
 export default function LandingPage() {
   const [activeDot, setActiveDot] = useState(0);
   const [activeStory, setActiveStory] = useState(0);
-  const [parallaxY, setParallaxY] = useState(0);
-  const particles = useMemo(() => buildParticles(55), []);
-
-  useEffect(() => {
-    const onScroll = () => {
-      setParallaxY(window.scrollY);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     const targets = document.querySelectorAll<HTMLElement>("[data-story-step]");
@@ -109,66 +61,12 @@ export default function LandingPage() {
 
   return (
     <>
-      <div className="ocean-bg" style={{ transform: `translateY(${parallaxY * 0.08}px)` }}>
-        <div
-          className="depth-layer depth-far"
-          style={{ transform: `translateY(${parallaxY * 0.2}px)` }}
-        />
-        <div
-          className="depth-layer depth-mid"
-          style={{ transform: `translateY(${parallaxY * 0.12}px)` }}
-        />
-        <div
-          className="jelly-blob"
-          style={{
-            width: "400px",
-            height: "400px",
-            right: "-80px",
-            top: "5%",
-            animationDuration: "7s",
-            background: "radial-gradient(circle,rgba(0,180,255,0.85),transparent 70%)",
-          }}
-        />
-        <div
-          className="jelly-blob"
-          style={{
-            width: "300px",
-            height: "300px",
-            left: "5%",
-            top: "40%",
-            animationDuration: "9s",
-            animationDelay: "-3s",
-            background: "radial-gradient(circle,rgba(100,50,200,0.65),transparent 70%)",
-          }}
-        />
-        <div
-          className="jelly-blob"
-          style={{
-            width: "250px",
-            height: "250px",
-            right: "15%",
-            top: "55%",
-            animationDuration: "11s",
-            animationDelay: "-5s",
-            background: "radial-gradient(circle,rgba(0,150,255,0.75),transparent 70%)",
-          }}
-        />
-        <div
-          className="jelly-blob"
-          style={{
-            width: "200px",
-            height: "200px",
-            left: "20%",
-            bottom: "10%",
-            animationDuration: "8s",
-            animationDelay: "-2s",
-            background: "radial-gradient(circle,rgba(0,210,255,0.7),transparent 70%)",
-          }}
-        />
+      <div className="ocean-bg">
+        <div className="depth-layer depth-far" />
+        <div className="depth-layer depth-mid" />
 
         <svg
           className="coral-bottom"
-          style={{ transform: `translateY(${parallaxY * 0.35}px)` }}
           viewBox="0 0 1440 220"
           preserveAspectRatio="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -182,27 +80,6 @@ export default function LandingPage() {
           <ellipse cx="800" cy="190" rx="80" ry="30" fill="#004080" opacity="1" />
           <ellipse cx="1200" cy="185" rx="70" ry="35" fill="#003050" opacity="1" />
         </svg>
-
-        <div className="particles" aria-hidden="true">
-          {particles.map((p) => (
-            <span
-              key={p.id}
-              className="particle"
-              style={
-                {
-                  width: `${p.size}px`,
-                  height: `${p.size}px`,
-                  left: `${p.left}%`,
-                  bottom: "-10px",
-                  "--drift": `${p.drift}px`,
-                  animationDuration: `${p.duration}s`,
-                  animationDelay: `-${p.delay}s`,
-                  opacity: p.opacity,
-                } as React.CSSProperties
-              }
-            />
-          ))}
-        </div>
       </div>
 
       <div className="page">
@@ -222,63 +99,20 @@ export default function LandingPage() {
 
         <section className="hero">
           <svg
-            className="hero-jelly"
-            style={{ transform: `translateY(${parallaxY * -0.1}px)` }}
-            viewBox="0 0 200 280"
+            className="hero-blob"
+            viewBox="0 0 120 120"
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
           >
-            <defs>
-              <radialGradient id="jglow" cx="50%" cy="40%" r="55%">
-                <stop offset="0%" stopColor="#00d2ff" stopOpacity="1" />
-                <stop offset="100%" stopColor="#0080c0" stopOpacity="0.4" />
-              </radialGradient>
-            </defs>
-            <ellipse cx="100" cy="90" rx="75" ry="60" fill="url(#jglow)" opacity="0.9" />
-            <ellipse
-              cx="100"
-              cy="80"
-              rx="65"
-              ry="50"
+            <circle cx="60" cy="60" r="50" fill="#1ED760" opacity="0.15" />
+            <circle
+              cx="60"
+              cy="60"
+              r="45"
               fill="none"
-              stroke="rgba(0,210,255,0.6)"
-              strokeWidth="1"
-            />
-            <path
-              d="M60 140 Q55 180 65 220 Q70 240 60 260"
-              stroke="rgba(0,210,255,0.5)"
-              strokeWidth="1.5"
-              fill="none"
-            />
-            <path
-              d="M75 148 Q72 190 80 225 Q84 245 76 270"
-              stroke="rgba(0,210,255,0.45)"
-              strokeWidth="1.5"
-              fill="none"
-            />
-            <path
-              d="M90 152 Q90 195 95 230 Q97 250 90 275"
-              stroke="rgba(0,210,255,0.5)"
-              strokeWidth="1.5"
-              fill="none"
-            />
-            <path
-              d="M110 152 Q112 195 108 230 Q106 250 112 275"
-              stroke="rgba(0,210,255,0.45)"
-              strokeWidth="1.5"
-              fill="none"
-            />
-            <path
-              d="M125 148 Q128 190 122 225 Q118 245 126 270"
-              stroke="rgba(0,210,255,0.5)"
-              strokeWidth="1.5"
-              fill="none"
-            />
-            <path
-              d="M140 140 Q146 180 137 220 Q132 240 142 260"
-              stroke="rgba(0,210,255,0.45)"
-              strokeWidth="1.5"
-              fill="none"
+              stroke="#1ED760"
+              strokeWidth="0.5"
+              opacity="0.3"
             />
           </svg>
 
@@ -290,7 +124,7 @@ export default function LandingPage() {
           <p className="hero-tag anim-1">TEAM</p>
 
           <h1 className="hero-title anim-2">
-            <span className="big glow-text">Scan.in</span>
+            <span className="big">Scan.in</span>
             <span className="sub">Kasir Digital.</span>
           </h1>
 
@@ -406,92 +240,49 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="cards-section" id="features">
-          <div className="cards-grid">
-            <article className="feat-card">
-              <div className="feat-card-illus illus-1">
-                <span className="feat-overlay">Kasir</span>
-              </div>
-              <div className="feat-card-body">
-                <div className="feat-card-num">01</div>
-                <h3 className="feat-card-title">Point of Sale</h3>
-                <p className="feat-card-desc">
-                  Kelola transaksi dengan cepat. Antarmuka intuitif untuk peak hours tersibuk.
-                </p>
-              </div>
-            </article>
-
-            <article className="feat-card">
-              <div className="feat-card-illus illus-2">
-                <span className="feat-overlay">Scan QR</span>
-              </div>
-              <div className="feat-card-body">
-                <div className="feat-card-num">02</div>
-                <h3 className="feat-card-title">QR Ordering</h3>
-                <p className="feat-card-desc">
-                  Pelanggan scan, pesan langsung. Bergabung dan jadi bagian dari petualangan ini.
-                </p>
-              </div>
-            </article>
-
-            <article className="feat-card">
-              <div className="feat-card-illus illus-3">
-                <span className="feat-overlay">Whales</span>
-              </div>
-              <div className="feat-card-body">
-                <div className="feat-card-num">03</div>
-                <h3 className="feat-card-title">Dashboard Analytics</h3>
-                <p className="feat-card-desc">
-                  Temani pertumbuhan bisnis bersama kami. Data real-time yang hangat dan akurat.
-                </p>
-              </div>
-            </article>
-          </div>
-        </section>
-
         <section className="team-wrap">
           <div className="team-section">
             <div className="team-header">
-              <div>
-                <p className="section-label">Administrasi</p>
-                <h3 className="team-title">Tim Kami</h3>
-              </div>
-              <span className="team-year">2025</span>
+              <h2 className="team-title">Founder Scan.in</h2>
+              <p className="team-year">First edition, 2025</p>
             </div>
 
             <div className="team-grid">
               {team.map((member) => (
-                <article key={member.name} className="team-card">
+                <div key={member.initial} className="team-card">
                   <div className={`team-avatar ${member.variant}`}>{member.initial}</div>
-                  <div>
-                    <h4 className="team-name">{member.name}</h4>
-                    <p className="team-role">{member.role}</p>
-                  </div>
-                  <span className="team-enter">enter -&gt;</span>
-                </article>
+                  <p className="team-name">{member.name}</p>
+                  <p className="team-role">{member.role}</p>
+                  <a href="#" className="team-enter">
+                    Tentang →
+                  </a>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="cta-section" id="contact">
-          <h2 className="cta-title">DON&apos;T MISS IT</h2>
-          <p className="cta-sub">Join us</p>
+        <section className="cta-section">
+          <h2 className="cta-title">
+            Daftarkan bisnis <br />
+            <span style={{ color: "rgba(215, 227, 249, 0.6)" }}>Kamu di Scan.in</span>
+          </h2>
+          <p className="cta-sub">Mulai perjalanan digital Anda sekarang</p>
           <p className="cta-desc">
-            Jangan lewatkan rilis pertama kami. Apa yang kamu tunggu? Bergabunglah bersama kami.
+            Tingkatkan efisiensi operasional toko dengan teknologi terdepan
           </p>
 
           <div className="cta-button-shell">
-            <button className="cta-button">Claim Your Terminal</button>
+            <button className="cta-button">Daftar Gratis</button>
           </div>
 
-          <div className="cta-dots" role="tablist" aria-label="CTA tabs">
-            {[0, 1, 2].map((index) => (
+          <div className="cta-dots">
+            {[0, 1, 2].map((i) => (
               <button
-                key={index}
-                className={`cta-dot ${activeDot === index ? "active" : ""}`}
-                onClick={() => setActiveDot(index)}
-                aria-label={`Pilih CTA ${index + 1}`}
+                key={i}
+                className={`cta-dot ${activeDot === i ? "active" : ""}`}
+                onClick={() => setActiveDot(i)}
+                aria-label={`Slide ${i + 1}`}
               />
             ))}
           </div>
@@ -500,18 +291,19 @@ export default function LandingPage() {
         <footer>
           <div>
             <div className="footer-logo">Scan.in</div>
-            <div className="footer-copy">© 2025 Scan.in. Deep space for unique discovery.</div>
+            <p className="footer-copy">© 2025 Semua hak dilindungi</p>
           </div>
           <div className="footer-links">
-            <a href="#">Privasi</a>
-            <a href="#">Protokol</a>
-            <a href="#">Terminal</a>
+            <a href="#">Tentang</a>
+            <a href="#">Fitur</a>
+            <a href="#">Pricing</a>
+            <a href="#">Blog</a>
             <a href="#">Kontak</a>
           </div>
           <div className="footer-socials">
-            <a href="#">IG</a>
-            <a href="#">TW</a>
-            <a href="#">YT</a>
+            <a href="#">Twitter</a>
+            <a href="#">Instagram</a>
+            <a href="#">LinkedIn</a>
           </div>
         </footer>
       </div>

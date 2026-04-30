@@ -5,13 +5,13 @@
   :root {
     --background: #ffffff;
     --foreground: #171717;
-    --primary: #11d4ff;
+    --primary: #1ed760;
     --secondary: #c9bfff;
-    --bg: #041428;
-    --surface: rgba(7, 20, 35, 0.78);
-    --border: rgba(17, 212, 255, 0.24);
+    --bg: #121212;
+    --surface: rgba(29, 29, 29, 0.9);
+    --border: rgba(30, 215, 96, 0.24);
     --text: #dce8ff;
-    --muted: #88a4be;
+    --muted: #808080;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -37,13 +37,11 @@
 @layer components {
   .ocean-bg {
     @apply fixed inset-0 z-0 overflow-hidden;
-    transition: transform 0.15s linear;
-    will-change: transform;
+    background: linear-gradient(180deg, #001830 0%, #010e1f 40%, #030f1e 100%);
   }
 
   .depth-layer {
     @apply absolute inset-[-10%] pointer-events-none;
-    will-change: transform;
   }
 
   .depth-far {
@@ -74,8 +72,8 @@
   }
 
   .nav-logo {
-    @apply text-xl font-bold text-[#11d4ff];
-    text-shadow: 0 0 12px rgba(0, 210, 255, 0.7);
+    @apply text-xl font-bold text-[#1ED760];
+    text-shadow: 0 0 12px rgba(30, 215, 96, 0.7);
     letter-spacing: -0.03em;
   }
 
@@ -94,47 +92,59 @@
   }
 
   .nav-links a.active {
-    @apply text-[#11d4ff];
-    @apply text-[#11d4ff];
+    @apply text-[#1ED760];
   }
 
   .nav-cta {
     @apply text-xs font-bold uppercase py-2 px-3.5 rounded-full border-0 cursor-pointer transition-all;
     background: var(--primary);
-    color: #001f28;
+    color: #000000;
     letter-spacing: 0.07em;
-    box-shadow: 0 0 18px rgba(0, 210, 255, 0.35);
+    box-shadow: 0 0 18px rgba(30, 215, 96, 0.35);
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .nav-cta:hover {
-    box-shadow: 0 0 30px rgba(0, 210, 255, 0.6);
+    box-shadow: 0 0 30px rgba(30, 215, 96, 0.6);
     transform: scale(1.03);
+    background: #1abc4d;
+  }
+
+  .nav-cta:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
   }
 
   .hero {
-    @apply relative overflow-hidden flex flex-col items-center justify-center text-center min-h-screen px-5 py-28;
+    @apply relative overflow-hidden flex flex-col items-center justify-center text-center min-h-screen px-5;
+    padding: 120px 20px 80px;
   }
 
   .hero-edition {
     @apply text-xs uppercase mb-7 flex gap-5;
-    color: rgba(215, 227, 249, 0.4);
+    color: #808080;
     letter-spacing: 0.28em;
   }
 
   .hero-tag {
-    @apply text-xs font-bold uppercase mb-3 text-[#11d4ff];
-    @apply text-xs font-bold uppercase mb-3 text-[#11d4ff];
+    @apply text-xs font-bold uppercase mb-3 text-[#1ED760];
     letter-spacing: 0.2em;
-    text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
   }
 
   .hero-title {
-    @apply font-bold leading-none -tracking-wider mb-0;
-    font-size: clamp(52px, 15vw, 130px);
+    @apply font-black leading-none mb-0;
+    font-size: clamp(3.5rem, 15vw, 130px);
+    letter-spacing: -0.04em;
+    color: #ffffff;
   }
 
   .hero-title .big {
     @apply text-white block;
+    color: #1ed760;
   }
 
   .hero-title .sub {
@@ -144,34 +154,36 @@
 
   .hero-title .glow-text {
     @apply text-white;
-    background: linear-gradient(135deg, #fff 30%, var(--primary) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.4));
   }
 
   .hero-brand {
     @apply mt-2.5 text-xs uppercase;
-    color: rgba(215, 227, 249, 0.5);
+    color: #808080;
     letter-spacing: 0.12em;
   }
 
   .hero-scroll-btn {
     @apply mt-12 w-13 h-13 rounded-full flex items-center justify-center cursor-pointer transition-all;
-    background: rgba(0, 210, 255, 0.2);
-    border: 1px solid rgba(0, 210, 255, 0.5);
-    animation: bounce 2s ease-in-out infinite;
+    background: rgba(30, 215, 96, 0.2);
+    border: 2px solid rgba(30, 215, 96, 0.8);
+    min-width: 52px;
+    min-height: 52px;
   }
 
   .hero-scroll-btn:hover {
-    background: rgba(0, 210, 255, 0.35);
-    box-shadow: 0 0 25px rgba(0, 210, 255, 0.6);
+    background: rgba(30, 215, 96, 0.35);
+    box-shadow: 0 0 25px rgba(30, 215, 96, 0.8);
+    transform: scale(1.08);
+    border-color: var(--primary);
+  }
+
+  .hero-scroll-btn:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
   }
 
   .hero-scroll-btn svg {
-    @apply text-[#11d4ff] w-5.5 h-5.5;
-    @apply text-[#11d4ff] w-5.5 h-5.5;
+    @apply text-[#1ED760] w-5.5 h-5.5 transition-all;
   }
 
   .section-label {
@@ -182,8 +194,8 @@
 
   .chip {
     @apply inline-block px-2.5 py-0.5 rounded-full text-xs border;
-    background: rgba(0, 210, 255, 0.25);
-    border-color: rgba(0, 210, 255, 0.5);
+    background: rgba(30, 215, 96, 0.25);
+    border-color: rgba(30, 215, 96, 0.5);
     color: var(--primary);
     margin-left: 2;
   }
@@ -222,6 +234,6 @@
   .rule-text {
     @apply text-sm max-w-45;
     color: var(--muted);
-    line-height: 1.5;
+    line-height: 1.7;
   }
 }
