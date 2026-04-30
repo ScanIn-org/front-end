@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Be_Vietnam_Pro } from "next/font/google";
+import { AppProvider } from "@/context/AppContext";
 import "./globals.css";
 
 const beVietnam = Be_Vietnam_Pro({
@@ -24,8 +25,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         />
       </head>
-      <body className="min-h-full flex flex-col bg-black text-on-surface selection:bg-primary-container selection:text-on-primary-container">
-        {children}
+      <body className="min-h-full flex flex-col bg-[#181A20] text-white selection:bg-[#22E584]/30 selection:text-white">
+        <AppProvider>
+          {children}
+        </AppProvider>
       </body>
     </html>
   );
