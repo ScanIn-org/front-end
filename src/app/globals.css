@@ -1,26 +1,227 @@
 @import "tailwindcss";
+@import "./components.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #171717;
+    --primary: #11d4ff;
+    --secondary: #c9bfff;
+    --bg: #041428;
+    --surface: rgba(7, 20, 35, 0.78);
+    --border: rgba(17, 212, 255, 0.24);
+    --text: #dce8ff;
+    --muted: #88a4be;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: #0a0a0a;
+      --foreground: #ededed;
+    }
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    overflow-x: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-geist-sans), sans-serif;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .ocean-bg {
+    @apply fixed inset-0 z-0 overflow-hidden;
+    transition: transform 0.15s linear;
+    will-change: transform;
+  }
+
+  .depth-layer {
+    @apply absolute inset-[-10%] pointer-events-none;
+    will-change: transform;
+  }
+
+  .depth-far {
+    @apply z-[1];
+    background:
+      radial-gradient(circle at 15% 30%, rgba(5, 45, 95, 0.42), transparent 45%),
+      radial-gradient(circle at 82% 22%, rgba(10, 78, 128, 0.35), transparent 42%);
+  }
+
+  .depth-mid {
+    @apply z-[2] mix-blend-screen;
+    background:
+      linear-gradient(180deg, rgba(0, 19, 44, 0.1) 0%, rgba(0, 11, 28, 0.48) 100%),
+      radial-gradient(circle at 40% 70%, rgba(10, 68, 125, 0.28), transparent 55%);
+  }
+
+  .page {
+    @apply relative z-10;
+  }
+
+  nav {
+    @apply fixed top-4 left-1/2 -translate-x-1/2 z-100 flex items-center justify-between px-3.5 py-2.5 rounded-full;
+    width: calc(100% - 20px);
+    background: rgba(4, 20, 40, 0.78);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .nav-logo {
+    @apply text-xl font-bold text-[#11d4ff];
+    text-shadow: 0 0 12px rgba(0, 210, 255, 0.7);
+    letter-spacing: -0.03em;
+  }
+
+  .nav-links {
+    @apply hidden gap-6 items-center;
+  }
+
+  .nav-links a {
+    @apply text-xs font-medium no-underline transition-colors;
+    color: rgba(215, 227, 249, 0.6);
+    letter-spacing: 0.04em;
+  }
+
+  .nav-links a:hover {
+    @apply text-white;
+  }
+
+  .nav-links a.active {
+    @apply text-[#11d4ff];
+    @apply text-[#11d4ff];
+  }
+
+  .nav-cta {
+    @apply text-xs font-bold uppercase py-2 px-3.5 rounded-full border-0 cursor-pointer transition-all;
+    background: var(--primary);
+    color: #001f28;
+    letter-spacing: 0.07em;
+    box-shadow: 0 0 18px rgba(0, 210, 255, 0.35);
+  }
+
+  .nav-cta:hover {
+    box-shadow: 0 0 30px rgba(0, 210, 255, 0.6);
+    transform: scale(1.03);
+  }
+
+  .hero {
+    @apply relative overflow-hidden flex flex-col items-center justify-center text-center min-h-screen px-5 py-28;
+  }
+
+  .hero-edition {
+    @apply text-xs uppercase mb-7 flex gap-5;
+    color: rgba(215, 227, 249, 0.4);
+    letter-spacing: 0.28em;
+  }
+
+  .hero-tag {
+    @apply text-xs font-bold uppercase mb-3 text-[#11d4ff];
+    @apply text-xs font-bold uppercase mb-3 text-[#11d4ff];
+    letter-spacing: 0.2em;
+    text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+  }
+
+  .hero-title {
+    @apply font-bold leading-none -tracking-wider mb-0;
+    font-size: clamp(52px, 15vw, 130px);
+  }
+
+  .hero-title .big {
+    @apply text-white block;
+  }
+
+  .hero-title .sub {
+    @apply text-white block -mt-1.5;
+    font-size: clamp(34px, 10vw, 90px);
+  }
+
+  .hero-title .glow-text {
+    @apply text-white;
+    background: linear-gradient(135deg, #fff 30%, var(--primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.4));
+  }
+
+  .hero-brand {
+    @apply mt-2.5 text-xs uppercase;
+    color: rgba(215, 227, 249, 0.5);
+    letter-spacing: 0.12em;
+  }
+
+  .hero-scroll-btn {
+    @apply mt-12 w-13 h-13 rounded-full flex items-center justify-center cursor-pointer transition-all;
+    background: rgba(0, 210, 255, 0.2);
+    border: 1px solid rgba(0, 210, 255, 0.5);
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  .hero-scroll-btn:hover {
+    background: rgba(0, 210, 255, 0.35);
+    box-shadow: 0 0 25px rgba(0, 210, 255, 0.6);
+  }
+
+  .hero-scroll-btn svg {
+    @apply text-[#11d4ff] w-5.5 h-5.5;
+    @apply text-[#11d4ff] w-5.5 h-5.5;
+  }
+
+  .section-label {
+    @apply text-xs font-semibold uppercase mb-4.5 block;
+    letter-spacing: 0.25em;
+    color: rgba(215, 227, 249, 0.35);
+  }
+
+  .chip {
+    @apply inline-block px-2.5 py-0.5 rounded-full text-xs border;
+    background: rgba(0, 210, 255, 0.25);
+    border-color: rgba(0, 210, 255, 0.5);
+    color: var(--primary);
+    margin-left: 2;
+  }
+
+  .rules-section {
+    @apply max-w-3xl mx-auto px-5 pb-28 relative;
+  }
+
+  .rules-card {
+    @apply relative overflow-hidden grid gap-6 rounded-3xl p-7 border;
+    background: rgba(8, 24, 42, 0.8);
+    border-color: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .rules-watermark {
+    @apply absolute inset-0 w-full h-full pointer-events-none;
+    opacity: 0.15;
+  }
+
+  .rule-item {
+    @apply relative z-2 flex flex-col gap-2.5 border-b pb-4.5;
+    border-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .rule-item:last-child {
+    @apply border-b-0 pb-0;
+  }
+
+  .rule-num {
+    @apply text-6xl font-bold leading-none -tracking-tight;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .rule-text {
+    @apply text-sm max-w-45;
+    color: var(--muted);
+    line-height: 1.5;
+  }
 }

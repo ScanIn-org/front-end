@@ -1,477 +1,520 @@
 "use client";
 
-import React, { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-const generateParticles = () =>
-  Array.from({ length: 50 }, (_, i) => ({
-    id: i,
-    size: Math.random() * 4 + 1,
-    left: Math.random() * 100,
-    delay: Math.random() * 20,
-    duration: Math.random() * 18 + 12,
-    drift: (Math.random() - 0.5) * 80,
-  }));
+type Particle = {
+  id: number;
+  size: string;
+  left: string;
+  delay: string;
+  duration: string;
+  drift: string;
+  opacity: string;
+};
+
+const rules = [
+  { number: "01", text: "250 transaksi harian otomatis tersinkron" },
+  { number: "02", text: "Lengkapi semua aktivitas penjualan" },
+  { number: "03", text: "Data aman, jangan ambil hati" },
+];
+
+const team = [
+  { initial: "A", name: "Astaroth Schörder", role: "Co-Founder", variant: "primary" },
+  { initial: "K", name: "Koda Hakim", role: "Founder", variant: "secondary" },
+  { initial: "C", name: "Chloe D'ionxony", role: "Co-Founder", variant: "teal" },
+] as const;
+
+const storySteps = [
+  {
+    phase: "BAB 01",
+    title: "Awal Dari Counter Kecil",
+    text: "Scan.in dimulai dari kebutuhan simpel: kasir yang cepat, stabil, dan gampang dipakai saat toko ramai.",
+  },
+  {
+    phase: "BAB 02",
+    title: "Semua Tersambung Real-time",
+    text: "Order, stok, dan pembayaran bergerak dalam satu alur. Tim tidak lagi kerja manual di banyak tempat.",
+  },
+  {
+    phase: "BAB 03",
+    title: "Naik Kelas Dengan Data",
+    text: "Saat trafik bertambah, dashboard jadi kompas. Keputusan harian lebih cepat karena insight langsung terlihat.",
+  },
+] as const;
+
+const fract = (n: number) => n - Math.floor(n);
+
+const seeded = (i: number, salt: number) => {
+  const v = Math.sin(i * 78.233 + salt * 37.719) * 43758.5453123;
+  return fract(v);
+};
+
+const buildParticles = (count: number): Particle[] =>
+  Array.from({ length: count }, (_, i) => {
+    const sizeRand = seeded(i + 1, 11);
+    const leftRand = seeded(i + 3, 21);
+    const delayRand = seeded(i + 7, 31);
+    const durationRand = seeded(i + 11, 41);
+    const driftRand = seeded(i + 19, 51);
+    const opacityRand = seeded(i + 23, 61);
+
+    return {
+      id: i,
+      size: (sizeRand * 4 + 1).toFixed(4),
+      left: (leftRand * 100).toFixed(4),
+      delay: (delayRand * 20).toFixed(4),
+      duration: (durationRand * 18 + 12).toFixed(4),
+      drift: ((driftRand - 0.5) * 80).toFixed(4),
+      opacity: (opacityRand * 0.3 + 0.6).toFixed(6),
+    };
+  });
 
 export default function LandingPage() {
-  const [activeTab, setActiveTab] = useState(0);
-  const [particles] = useState(generateParticles());
+  const [activeDot, setActiveDot] = useState(0);
+  const [activeStory, setActiveStory] = useState(0);
+  const [parallaxY, setParallaxY] = useState(0);
+  const particles = useMemo(() => buildParticles(55), []);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setParallaxY(window.scrollY);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const targets = document.querySelectorAll<HTMLElement>("[data-story-step]");
+    if (!targets.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const step = Number(entry.target.getAttribute("data-story-step") ?? 0);
+            setActiveStory(step);
+          }
+        });
+      },
+      {
+        threshold: 0.6,
+        rootMargin: "-10% 0px -20% 0px",
+      },
+    );
+
+    targets.forEach((target) => observer.observe(target));
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="relative w-full overflow-x-hidden bg-gradient-to-b from-slate-950 via-blue-950 to-slate-950">
-      {/* ─── ANIMATED BACKGROUND ─── */}
-      <div className="fixed inset-0 z-0 overflow-hidden">
-        {/* Gradient blobs */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-blue-900 to-slate-950" />
-
-        {/* Animated gradient orbs */}
+    <>
+      <div className="ocean-bg" style={{ transform: `translateY(${parallaxY * 0.08}px)` }}>
         <div
-          className="absolute w-96 h-96 rounded-full opacity-20 blur-3xl"
+          className="depth-layer depth-far"
+          style={{ transform: `translateY(${parallaxY * 0.2}px)` }}
+        />
+        <div
+          className="depth-layer depth-mid"
+          style={{ transform: `translateY(${parallaxY * 0.12}px)` }}
+        />
+        <div
+          className="jelly-blob"
           style={{
-            background: "radial-gradient(circle, #00d2ff 0%, transparent 70%)",
+            width: "400px",
+            height: "400px",
             right: "-80px",
             top: "5%",
-            animation: "float 8s ease-in-out infinite",
+            animationDuration: "7s",
+            background: "radial-gradient(circle,rgba(0,180,255,0.85),transparent 70%)",
           }}
         />
         <div
-          className="absolute w-80 h-80 rounded-full opacity-15 blur-3xl"
+          className="jelly-blob"
           style={{
-            background: "radial-gradient(circle, #6b5dff 0%, transparent 70%)",
+            width: "300px",
+            height: "300px",
             left: "5%",
             top: "40%",
-            animation: "float 10s ease-in-out infinite reverse",
-            animationDelay: "-2s",
+            animationDuration: "9s",
+            animationDelay: "-3s",
+            background: "radial-gradient(circle,rgba(100,50,200,0.65),transparent 70%)",
           }}
         />
         <div
-          className="absolute w-72 h-72 rounded-full opacity-10 blur-3xl"
+          className="jelly-blob"
           style={{
-            background: "radial-gradient(circle, #00d2ff 0%, transparent 70%)",
-            right: "10%",
+            width: "250px",
+            height: "250px",
+            right: "15%",
+            top: "55%",
+            animationDuration: "11s",
+            animationDelay: "-5s",
+            background: "radial-gradient(circle,rgba(0,150,255,0.75),transparent 70%)",
+          }}
+        />
+        <div
+          className="jelly-blob"
+          style={{
+            width: "200px",
+            height: "200px",
+            left: "20%",
             bottom: "10%",
-            animation: "float 12s ease-in-out infinite",
-            animationDelay: "-4s",
+            animationDuration: "8s",
+            animationDelay: "-2s",
+            background: "radial-gradient(circle,rgba(0,210,255,0.7),transparent 70%)",
           }}
         />
 
-        {/* Floating particles */}
-        {particles.map((p) => (
-          <div
-            key={p.id}
-            className="absolute rounded-full bg-cyan-400 opacity-30 blur-sm"
-            style={
-              {
-                width: `${p.size}px`,
-                height: `${p.size}px`,
-                left: `${p.left}%`,
-                bottom: "-10px",
-                animation: `float-up ${p.duration}s linear infinite`,
-                animationDelay: `-${p.delay}s`,
-                "--drift": `${p.drift}px`,
-              } as React.CSSProperties
-            }
+        <svg
+          className="coral-bottom"
+          style={{ transform: `translateY(${parallaxY * 0.35}px)` }}
+          viewBox="0 0 1440 220"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path
+            d="M0 220 L0 160 Q40 80 80 130 Q110 160 130 100 Q150 60 170 110 Q190 145 220 80 Q240 40 260 90 Q280 130 310 70 Q340 20 360 80 Q390 140 420 60 Q450 0 480 70 Q510 130 540 50 Q570 0 600 80 Q630 150 660 40 Q690 0 720 70 Q750 130 780 50 Q810 0 840 80 Q870 150 900 60 Q930 0 960 80 Q990 140 1020 50 Q1050 0 1080 80 Q1110 150 1140 60 Q1170 0 1200 80 Q1230 150 1260 70 Q1290 10 1320 90 Q1360 150 1400 80 L1440 70 L1440 220 Z"
+            fill="#003050"
           />
-        ))}
-      </div>
+          <ellipse cx="200" cy="180" rx="60" ry="40" fill="#003060" opacity="1" />
+          <ellipse cx="800" cy="190" rx="80" ry="30" fill="#004080" opacity="1" />
+          <ellipse cx="1200" cy="185" rx="70" ry="35" fill="#003050" opacity="1" />
+        </svg>
 
-      {/* ─── NAV ─── */}
-      <nav
-        className="fixed top-6 left-1/2 -translate-x-1/2 w-92 max-w-4xl z-50 flex items-center justify-between px-8 py-4 rounded-full"
-        style={{
-          background: "rgba(15, 23, 42, 0.7)",
-          backdropFilter: "blur(16px)",
-          border: "1px solid rgba(255, 255, 255, 0.1)",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
-        }}
-      >
-        <span className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-          Scan.in
-        </span>
-        <div className="hidden md:flex gap-8 items-center">
-          {["Beranda", "Fitur", "Tentang", "Kontak"].map((item) => (
-            <a
-              key={item}
-              href="#"
-              className="text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors"
-            >
-              {item}
-            </a>
+        <div className="particles" aria-hidden="true">
+          {particles.map((p) => (
+            <span
+              key={p.id}
+              className="particle"
+              style={
+                {
+                  width: `${p.size}px`,
+                  height: `${p.size}px`,
+                  left: `${p.left}%`,
+                  bottom: "-10px",
+                  "--drift": `${p.drift}px`,
+                  animationDuration: `${p.duration}s`,
+                  animationDelay: `-${p.delay}s`,
+                  opacity: p.opacity,
+                } as React.CSSProperties
+              }
+            />
           ))}
         </div>
-        <button className="px-6 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-900 hover:shadow-lg hover:shadow-cyan-500/50 transition-all">
-          Mulai Gratis
-        </button>
-      </nav>
+      </div>
 
-      {/* ─── HERO ─── */}
-      <section className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 pt-24 pb-12 text-center overflow-hidden">
-        {/* Animated background lines */}
-        <div className="absolute inset-0 opacity-20 pointer-events-none">
-          <div
-            className="absolute w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent"
-            style={{ top: "25%", animation: "shimmer 3s ease-in-out infinite" }}
-          />
-          <div
-            className="absolute w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent"
-            style={{ top: "50%", animation: "shimmer 4s ease-in-out infinite reverse" }}
-          />
-        </div>
+      <div className="page">
+        <nav>
+          <div className="nav-logo">Scan.in</div>
+          <div className="nav-links">
+            <a href="#" className="active">
+              Beranda
+            </a>
+            <a href="#features">Fitur</a>
+            <a href="#story">Story</a>
+            <a href="#about">Tentang</a>
+            <a href="#contact">Kontak</a>
+          </div>
+          <button className="nav-cta">Mulai Gratis</button>
+        </nav>
 
-        <div className="relative z-10 space-y-8 max-w-3xl animate-fade-in">
-          {/* Tag */}
-          <div className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30">
-            <span className="text-xs font-bold tracking-widest text-cyan-400">
-              FIRST EDITION 2025
-            </span>
+        <section className="hero">
+          <svg
+            className="hero-jelly"
+            style={{ transform: `translateY(${parallaxY * -0.1}px)` }}
+            viewBox="0 0 200 280"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <defs>
+              <radialGradient id="jglow" cx="50%" cy="40%" r="55%">
+                <stop offset="0%" stopColor="#00d2ff" stopOpacity="1" />
+                <stop offset="100%" stopColor="#0080c0" stopOpacity="0.4" />
+              </radialGradient>
+            </defs>
+            <ellipse cx="100" cy="90" rx="75" ry="60" fill="url(#jglow)" opacity="0.9" />
+            <ellipse
+              cx="100"
+              cy="80"
+              rx="65"
+              ry="50"
+              fill="none"
+              stroke="rgba(0,210,255,0.6)"
+              strokeWidth="1"
+            />
+            <path
+              d="M60 140 Q55 180 65 220 Q70 240 60 260"
+              stroke="rgba(0,210,255,0.5)"
+              strokeWidth="1.5"
+              fill="none"
+            />
+            <path
+              d="M75 148 Q72 190 80 225 Q84 245 76 270"
+              stroke="rgba(0,210,255,0.45)"
+              strokeWidth="1.5"
+              fill="none"
+            />
+            <path
+              d="M90 152 Q90 195 95 230 Q97 250 90 275"
+              stroke="rgba(0,210,255,0.5)"
+              strokeWidth="1.5"
+              fill="none"
+            />
+            <path
+              d="M110 152 Q112 195 108 230 Q106 250 112 275"
+              stroke="rgba(0,210,255,0.45)"
+              strokeWidth="1.5"
+              fill="none"
+            />
+            <path
+              d="M125 148 Q128 190 122 225 Q118 245 126 270"
+              stroke="rgba(0,210,255,0.5)"
+              strokeWidth="1.5"
+              fill="none"
+            />
+            <path
+              d="M140 140 Q146 180 137 220 Q132 240 142 260"
+              stroke="rgba(0,210,255,0.45)"
+              strokeWidth="1.5"
+              fill="none"
+            />
+          </svg>
+
+          <div className="hero-edition anim-1">
+            <span>First edition</span>
+            <span>2025</span>
           </div>
 
-          {/* Main title */}
-          <h1 className="text-7xl md:text-8xl font-bold tracking-tighter">
-            <span className="block text-white mb-2">Scan.in</span>
-            <span className="block bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent text-5xl md:text-6xl">
-              Kasir Digital
-            </span>
+          <p className="hero-tag anim-1">TEAM</p>
+
+          <h1 className="hero-title anim-2">
+            <span className="big glow-text">Scan.in</span>
+            <span className="sub">Kasir Digital.</span>
           </h1>
 
-          {/* Subtitle */}
-          <p className="text-lg md:text-xl text-slate-400 max-w-lg mx-auto">
-            Platform POS modern untuk UMKM. Teknologi deep-sea yang membawa bisnis Anda ke
-            permukaan.
-          </p>
+          <p className="hero-brand anim-3">UMKM · All rights reserved</p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-            <button className="px-8 py-4 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-900 font-bold hover:shadow-xl hover:shadow-cyan-400/50 transition-all transform hover:scale-105">
-              Coba Sekarang
-            </button>
-            <button className="px-8 py-4 rounded-lg bg-slate-700/30 backdrop-blur border border-slate-600/50 text-slate-200 font-bold hover:bg-slate-600/40 transition-all">
-              Pelajari Lebih
-            </button>
-          </div>
-
-          {/* Scroll indicator */}
-          <div className="pt-12 animate-bounce">
+          <button
+            className="hero-scroll-btn anim-4"
+            onClick={() => document.getElementById("rules")?.scrollIntoView({ behavior: "smooth" })}
+            aria-label="Scroll ke section rules"
+          >
             <svg
-              className="w-6 h-6 mx-auto text-cyan-400"
+              viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              viewBox="0 0 24 24"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 14l-7 7m0 0l-7-7m7 7V3"
-              />
+              <polyline points="6 9 12 15 18 9" />
             </svg>
-          </div>
-        </div>
-      </section>
+          </button>
+        </section>
 
-      {/* ─── FEATURES SECTION ─── */}
-      <section className="relative z-10 py-24 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">Fitur Utama</h2>
-            <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-              Dilengkapi dengan semua yang Anda butuhkan untuk menjalankan bisnis modern
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                number: "01",
-                title: "Point of Sale",
-                desc: "Kelola transaksi dengan cepat dan intuitif. Antarmuka yang dirancang untuk peak hours",
-                icon: "🛒",
-              },
-              {
-                number: "02",
-                title: "QR Ordering",
-                desc: "Pelanggan bisa scan dan pesan langsung dari meja mereka. Efisiensi maksimal",
-                icon: "📱",
-              },
-              {
-                number: "03",
-                title: "Analytics Dashboard",
-                desc: "Pantau pertumbuhan bisnis real-time dengan dashboard yang comprehensive",
-                icon: "📊",
-              },
-            ].map((feature, i) => (
-              <div
-                key={i}
-                className="group relative p-6 rounded-2xl overflow-hidden transition-all hover:scale-105"
-                style={{
-                  background: "rgba(30, 41, 59, 0.4)",
-                  backdropFilter: "blur(16px)",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
-                }}
-                onMouseEnter={(e) => {
-                  const el = e.currentTarget;
-                  el.style.background = "rgba(30, 41, 59, 0.6)";
-                  el.style.borderColor = "rgba(0, 210, 255, 0.3)";
-                  el.style.boxShadow = "0 0 30px rgba(0, 210, 255, 0.2)";
-                }}
-                onMouseLeave={(e) => {
-                  const el = e.currentTarget;
-                  el.style.background = "rgba(30, 41, 59, 0.4)";
-                  el.style.borderColor = "rgba(255, 255, 255, 0.1)";
-                  el.style.boxShadow = "none";
-                }}
-              >
-                <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-transparent" />
-                </div>
-
-                <div className="relative z-10">
-                  <div className="text-4xl mb-4">{feature.icon}</div>
-                  <div className="text-3xl font-bold text-cyan-400 mb-2">{feature.number}</div>
-                  <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
-                  <p className="text-slate-400">{feature.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── STATS SECTION ─── */}
-      <section className="relative z-10 py-24 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div
-            className="relative p-12 rounded-3xl overflow-hidden"
-            style={{
-              background: "rgba(20, 30, 50, 0.5)",
-              backdropFilter: "blur(20px)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-            }}
-          >
-            {/* Animated gradient background */}
-            <div className="absolute inset-0 opacity-40">
-              <div
-                className="absolute w-96 h-96 rounded-full blur-3xl"
-                style={{
-                  background: "radial-gradient(circle, #00d2ff 0%, transparent 70%)",
-                  right: "-100px",
-                  top: "-100px",
-                  animation: "pulse 4s ease-in-out infinite",
-                }}
-              />
-            </div>
-
-            <div className="relative z-10 grid md:grid-cols-3 gap-8 text-center">
-              {[
-                { label: "Transaksi Harian", value: "250+" },
-                { label: "Merchant Aktif", value: "1000+" },
-                { label: "Uptime", value: "99.9%" },
-              ].map((stat, i) => (
-                <div key={i}>
-                  <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2">
-                    {stat.value}
-                  </div>
-                  <p className="text-slate-400">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── TEAM SECTION ─── */}
-      <section className="relative z-10 py-24 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-white mb-4">Tim Kami</h2>
-            <p className="text-slate-400">
-              Dibuat oleh orang-orang yang passionate tentang teknologi
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Astaroth Schörder",
-                role: "Co-Founder",
-                initial: "A",
-              },
-              { name: "Koda Hakim", role: "Founder", initial: "K" },
-              {
-                name: "Chloe D'ionxony",
-                role: "Co-Founder",
-                initial: "C",
-              },
-            ].map((member, i) => (
-              <div
-                key={i}
-                className="flex flex-col items-center text-center p-6 rounded-xl hover:bg-slate-700/20 transition-colors"
-              >
-                <div className="w-20 h-20 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center text-2xl font-bold text-slate-900 mb-4 shadow-lg shadow-cyan-400/50">
-                  {member.initial}
-                </div>
-                <h3 className="text-xl font-bold text-white mb-1">{member.name}</h3>
-                <p className="text-slate-400 text-sm mb-4">{member.role}</p>
-                <a
-                  href="#"
-                  className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors font-semibold"
-                >
-                  Learn more →
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── CTA SECTION ─── */}
-      <section className="relative z-10 py-32 px-4 text-center">
-        <div className="max-w-3xl mx-auto space-y-8">
-          <h2 className="text-6xl md:text-7xl font-bold">
-            <span className="block text-white mb-2">Siap Memulai?</span>
-            <span className="block bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-              Bergabunglah Hari Ini
-            </span>
-          </h2>
-
-          <p className="text-lg text-slate-400 max-w-xl mx-auto">
-            Dapatkan akses early bird dan jadilah bagian dari revolusi POS digital
+        <section id="rules" className="rules-section">
+          <p className="section-label">
+            First rules <span className="chip">TEAM</span>
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <button className="px-10 py-4 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-900 font-bold text-lg hover:shadow-xl hover:shadow-cyan-400/50 transition-all transform hover:scale-105">
-              Claim Terminal Anda
-            </button>
+          <div className="rules-card glass-card-scan">
+            <svg
+              className="rules-watermark"
+              viewBox="0 0 900 200"
+              preserveAspectRatio="xMidYMid slice"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M50 130 Q150 80 250 120 Q300 140 350 90 Q380 70 400 110 Q420 130 450 80 Q500 40 550 100 Q580 130 620 70 Q680 20 750 90 Q800 140 860 80"
+                stroke="#00d2ff"
+                strokeWidth="1.5"
+                fill="none"
+                opacity="0.5"
+              />
+            </svg>
+            {rules.map((rule) => (
+              <div key={rule.number} className="rule-item">
+                <div className="rule-num">{rule.number}</div>
+                <div className="rule-text">{rule.text}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="space-section" id="about">
+          <svg
+            className="starfish-left"
+            viewBox="0 0 100 100"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M50 5 L60 40 L95 40 L65 60 L75 95 L50 72 L25 95 L35 60 L5 40 L40 40 Z"
+              fill="#00d2ff"
+            />
+          </svg>
+
+          <div className="space-content">
+            <p className="section-label">First edition</p>
+            <h2 className="section-big-title">A SPACE.</h2>
+            <p className="section-subtitle">Unik dan orisinal</p>
+            <p className="section-desc">
+              Sebuah ruang yang lahir dari kedalaman - untuk UMKM yang ingin berkembang bersama
+              teknologi modern.
+            </p>
+            <button className="btn-outline">Scanin Project</button>
+          </div>
+        </section>
+
+        <section className="story-section" id="story">
+          <div className="story-head">
+            <p className="section-label">Story</p>
+            <h2 className="story-title">Perjalanan Scan.in Saat Kamu Scroll Ke Bawah</h2>
           </div>
 
-          {/* Animated dots */}
-          <div className="flex justify-center gap-2 pt-8">
-            {[0, 1, 2].map((i) => (
+          <div className="story-layout">
+            <aside className="story-sticky">
+              <span className="story-phase">{storySteps[activeStory].phase}</span>
+              <h3>{storySteps[activeStory].title}</h3>
+              <p>{storySteps[activeStory].text}</p>
+              <div className="story-progress" aria-hidden="true">
+                {storySteps.map((_, index) => (
+                  <span
+                    key={index}
+                    className={`story-progress-dot ${activeStory === index ? "active" : ""}`}
+                  />
+                ))}
+              </div>
+            </aside>
+
+            <div className="story-steps">
+              {storySteps.map((step, index) => (
+                <article
+                  key={step.phase}
+                  data-story-step={index}
+                  className={`story-step ${activeStory === index ? "active" : ""}`}
+                >
+                  <span>{step.phase}</span>
+                  <h4>{step.title}</h4>
+                  <p>{step.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="cards-section" id="features">
+          <div className="cards-grid">
+            <article className="feat-card">
+              <div className="feat-card-illus illus-1">
+                <span className="feat-overlay">Kasir</span>
+              </div>
+              <div className="feat-card-body">
+                <div className="feat-card-num">01</div>
+                <h3 className="feat-card-title">Point of Sale</h3>
+                <p className="feat-card-desc">
+                  Kelola transaksi dengan cepat. Antarmuka intuitif untuk peak hours tersibuk.
+                </p>
+              </div>
+            </article>
+
+            <article className="feat-card">
+              <div className="feat-card-illus illus-2">
+                <span className="feat-overlay">Scan QR</span>
+              </div>
+              <div className="feat-card-body">
+                <div className="feat-card-num">02</div>
+                <h3 className="feat-card-title">QR Ordering</h3>
+                <p className="feat-card-desc">
+                  Pelanggan scan, pesan langsung. Bergabung dan jadi bagian dari petualangan ini.
+                </p>
+              </div>
+            </article>
+
+            <article className="feat-card">
+              <div className="feat-card-illus illus-3">
+                <span className="feat-overlay">Whales</span>
+              </div>
+              <div className="feat-card-body">
+                <div className="feat-card-num">03</div>
+                <h3 className="feat-card-title">Dashboard Analytics</h3>
+                <p className="feat-card-desc">
+                  Temani pertumbuhan bisnis bersama kami. Data real-time yang hangat dan akurat.
+                </p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section className="team-wrap">
+          <div className="team-section">
+            <div className="team-header">
+              <div>
+                <p className="section-label">Administrasi</p>
+                <h3 className="team-title">Tim Kami</h3>
+              </div>
+              <span className="team-year">2025</span>
+            </div>
+
+            <div className="team-grid">
+              {team.map((member) => (
+                <article key={member.name} className="team-card">
+                  <div className={`team-avatar ${member.variant}`}>{member.initial}</div>
+                  <div>
+                    <h4 className="team-name">{member.name}</h4>
+                    <p className="team-role">{member.role}</p>
+                  </div>
+                  <span className="team-enter">enter -&gt;</span>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="cta-section" id="contact">
+          <h2 className="cta-title">DON&apos;T MISS IT</h2>
+          <p className="cta-sub">Join us</p>
+          <p className="cta-desc">
+            Jangan lewatkan rilis pertama kami. Apa yang kamu tunggu? Bergabunglah bersama kami.
+          </p>
+
+          <div className="cta-button-shell">
+            <button className="cta-button">Claim Your Terminal</button>
+          </div>
+
+          <div className="cta-dots" role="tablist" aria-label="CTA tabs">
+            {[0, 1, 2].map((index) => (
               <button
-                key={i}
-                onClick={() => setActiveTab(i)}
-                className={`h-2 rounded-full transition-all ${
-                  activeTab === i
-                    ? "bg-cyan-400 w-10 shadow-lg shadow-cyan-400/50"
-                    : "bg-slate-600 w-2 hover:bg-slate-500"
-                }`}
+                key={index}
+                className={`cta-dot ${activeDot === index ? "active" : ""}`}
+                onClick={() => setActiveDot(index)}
+                aria-label={`Pilih CTA ${index + 1}`}
               />
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ─── FOOTER ─── */}
-      <footer className="relative z-10 border-t border-slate-700/50 bg-slate-950/80 backdrop-blur px-4 py-12">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            <div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                Scan.in
-              </span>
-              <p className="text-sm text-slate-500 mt-2">© 2025 Scan.in. Teknologi untuk UMKM.</p>
-            </div>
-
-            <div className="flex gap-6">
-              {["Privacy", "Terms", "Contact"].map((link) => (
-                <a
-                  key={link}
-                  href="#"
-                  className="text-sm text-slate-400 hover:text-cyan-400 transition-colors"
-                >
-                  {link}
-                </a>
-              ))}
-            </div>
-
-            <div className="flex gap-4">
-              {["Instagram", "Twitter", "LinkedIn"].map((social) => (
-                <a
-                  key={social}
-                  href="#"
-                  className="text-sm text-slate-400 hover:text-cyan-400 transition-colors"
-                >
-                  {social[0]}
-                </a>
-              ))}
-            </div>
+        <footer>
+          <div>
+            <div className="footer-logo">Scan.in</div>
+            <div className="footer-copy">© 2025 Scan.in. Deep space for unique discovery.</div>
           </div>
-        </div>
-      </footer>
-
-      {/* ─── STYLES ─── */}
-      <style jsx>{`
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px) translateX(0px);
-          }
-          25% {
-            transform: translateY(-20px) translateX(10px);
-          }
-          50% {
-            transform: translateY(-40px) translateX(-10px);
-          }
-          75% {
-            transform: translateY(-20px) translateX(10px);
-          }
-        }
-
-        @keyframes float-up {
-          0% {
-            transform: translateY(120vh) translateX(0) scale(1);
-            opacity: 0;
-          }
-          10% {
-            opacity: 0.8;
-          }
-          90% {
-            opacity: 0.5;
-          }
-          100% {
-            transform: translateY(-20vh) translateX(var(--drift, 0px)) scale(0.3);
-            opacity: 0;
-          }
-        }
-
-        @keyframes shimmer {
-          0%,
-          100% {
-            opacity: 0.1;
-            transform: scaleX(1);
-          }
-          50% {
-            opacity: 0.5;
-            transform: scaleX(1.05);
-          }
-        }
-
-        @keyframes pulse {
-          0%,
-          100% {
-            opacity: 0.2;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 0.4;
-            transform: scale(1.1);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.9s ease-out forwards;
-        }
-
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
-    </div>
+          <div className="footer-links">
+            <a href="#">Privasi</a>
+            <a href="#">Protokol</a>
+            <a href="#">Terminal</a>
+            <a href="#">Kontak</a>
+          </div>
+          <div className="footer-socials">
+            <a href="#">IG</a>
+            <a href="#">TW</a>
+            <a href="#">YT</a>
+          </div>
+        </footer>
+      </div>
+    </>
   );
 }
